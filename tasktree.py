@@ -1,4 +1,5 @@
 from tasknode import TaskNode
+from datetime import date
 
 
 class TaskTree:
@@ -6,11 +7,12 @@ class TaskTree:
     def __init__(self):
         self.root = TaskNode(0, "dummy", 30)
         self.last_id = 0
+        self.max_level = 0
+        self.max_length = 0
 
     def print(self):
         def print_task(task, level):
-            if level == 1: print("[ ] " + task.title)
-            if level > 1: print((level-1) * 4 * " " + "|__ [ ] " + task.title)
+            task.print(level, self.max_level, self.max_length)
             for child in task.get_children():
                 print_task(child, level + 1)
 
@@ -32,7 +34,7 @@ class TaskTree:
 
     def find_task(self, title):
         def look(current_task, title):
-            if current_task.title.lower() == title.lower():
+            if current_task.title.lower().strip() == title.lower().strip():
                 return current_task
             for child in current_task.get_children():
                 return look(child, title)
@@ -47,13 +49,17 @@ class TaskTree:
         return task_tree
 
     def serialize_node(self, node, parent=None):
-        node = TaskNode(self.last_id + 1, node["title"], node["estimated_cost"], parent)
+        due_date = date.fromisoformat(node["due_date"]) if node.get("due_date") else None
+        node = TaskNode(self.last_id + 1, node["title"], node["estimated_cost"], parent, node["time_unit"], due_date)
+        self.max_length = max(len(node.title), self.max_length)
         parent.add_child(node)
         self.last_id += 1
         return node
 
     def serialize(self, tree):
         def load(tree, parent):
+            if len(tree) > 0:
+                self.max_level += 1
             for node in tree:
                 serialized_node = self.serialize_node(node, parent)
                 load(node["children"], serialized_node)

@@ -1,5 +1,5 @@
 import typer
-from commands import show, add
+from commands import show, add, update
 from state import tasktree, taskengine
 from fractalcli import ERRORS, __app_name__, __version__, config, database
 from pathlib import Path
@@ -7,6 +7,7 @@ from pathlib import Path
 app = typer.Typer()
 app.add_typer(add.app, name="add")
 app.add_typer(show.app, name="show")
+app.add_typer(update.app, name="update")
 
 
 @app.callback()
