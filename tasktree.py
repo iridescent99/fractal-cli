@@ -1,11 +1,14 @@
+import typer
+
 from tasknode import TaskNode
 from datetime import date
-
+from fractalcli.time_unit import TimeUnit
+from fractalcli.status import Status
 
 class TaskTree:
 
     def __init__(self):
-        self.root = TaskNode(0, "dummy", 30)
+        self.root = TaskNode(0, "dummy", 30, None, TimeUnit.HOUR, "09-11-1999", Status.NOT_STARTED, 30)
         self.last_id = 0
         self.max_level = 0
         self.max_length = 0
@@ -23,7 +26,7 @@ class TaskTree:
         if existing_task:
             return existing_task
         if not parent:
-            child = TaskNode(self.last_id + 1, title, estimated_cost, self.root)
+            child = TaskNode(self.last_id + 1, title, estimated_cost, self.root, None)
             self.root.add_child(child)
             self.last_id += 1
             return child
@@ -50,7 +53,8 @@ class TaskTree:
 
     def serialize_node(self, node, parent=None):
         due_date = date.fromisoformat(node["due_date"]) if node.get("due_date") else None
-        node = TaskNode(self.last_id + 1, node["title"], node["estimated_cost"], parent, node["time_unit"], due_date)
+        node = TaskNode(self.last_id + 1, node["title"], node["estimated_cost"], parent, node["time_unit"], due_date,
+                        node["status"], node["actual_cost"])
         self.max_length = max(len(node.title), self.max_length)
         parent.add_child(node)
         self.last_id += 1

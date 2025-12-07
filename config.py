@@ -10,6 +10,7 @@ from fractalcli import (
 CONFIG_DIR_PATH = Path(typer.get_app_dir(__app_name__))
 CONFIG_FILE_PATH = CONFIG_DIR_PATH / "config.ini"
 
+
 def init_app(db_path: str) -> int:
     """Initialize the application."""
     config_code = _init_config_file()
@@ -19,6 +20,7 @@ def init_app(db_path: str) -> int:
     if database_code != SUCCESS:
         return database_code
     return SUCCESS
+
 
 def _init_config_file() -> int:
     try:
@@ -30,6 +32,7 @@ def _init_config_file() -> int:
     except OSError:
         return FILE_ERROR
     return SUCCESS
+
 
 def _create_database(db_path: str) -> int:
     config_parser = configparser.ConfigParser()
